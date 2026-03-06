@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Life Log</title>
+  <!-- Using Google Font 'Inter' for that sleek tech look -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body id="top">
+
+  <nav class="navbar glass-panel">
+    <div class="logo">Life Log</div>
+    <div class="nav-links" id="indexNavLinks">
+      <a href="index.html">Home</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <a href="dashboard.html" style="display: none;" id="navDashboardLink">Dashboard</a>
+      <a href="login.html" id="navLoginBtn">Login</a>
+      <a href="register.html" class="btn-primary" style="padding: 8px 20px; font-size: 14px;" id="navSignupBtn">Sign
+        Up</a>
+
+      <div class="profile-dropdown" onclick="toggleIndexDropdown()" id="navProfileDropdown" style="display: none;">
+        <img src="assets/default-avatar.png" alt="Profile" class="profile-avatar" id="indexNavAvatar"
+          onerror="this.src='https://ui-avatars.com/api/?name=User&background=0f0f13&color=00f2fe'">
+        <div class="dropdown-menu" id="indexDropdownMenu"
+          style="display: none; position: absolute; right: 0; background: var(--bg-panel); border: 1px solid var(--border-glass); border-radius: 12px; z-index: 200;">
+          <a href="profile.html"
+            style="color: var(--text-primary); padding: 12px 16px; text-decoration: none; display: block;">My
+            Profile</a>
+          <a href="#" style="color: var(--text-primary); padding: 12px 16px; text-decoration: none; display: block;"
+            onclick="logout()">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+
+      <div class="hero-text">
+        <h1>Elevate Your <br><span>Daily Potential</span></h1>
+        <p>
+          More than just a habit tracker. Life Log uses AI to analyze your routines, visualize your goals, and guide
+          your daily decisions in a frictionless, beautiful interface.
+        </p>
+        <div style="display: flex; gap: 15px;">
+          <a href="login.html" class="btn-primary">Start Logging</a>
+          <a href="#features" class="btn-secondary">Explore Features</a>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <!-- Kept the original asset path, assuming it exists -->
+        <img src="assets/hero.png" alt="Life Log Illustration" onerror="this.style.display='none'">
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Feature Cards -->
+  <section id="features" class="features">
+    <div class="card glass-panel">
+      <h3>Intelligent Tracking</h3>
+      <p>Log your daily tasks, durations, and moods seamlessly to build a repository of your life's activities.</p>
+    </div>
+
+    <div class="card glass-panel">
+      <h3>Smart AI Insights</h3>
+      <p>Our AI analyzes the correlation between your routines and your mood to provide personalized behavioral
+        suggestions.</p>
+    </div>
+
+    <div class="card glass-panel">
+      <h3>Rich Analytics</h3>
+      <p>Visualize your progress through detailed category breakdowns, mood distributions, and dynamic streak tracking.
+      </p>
+    </div>
+
+    <div class="card glass-panel">
+      <h3>Vision Board</h3>
+      <p>Stay motivated by keeping your long-term goals and inspirations visually front and center on your dashboard.
+      </p>
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section id="about" class="about-section glass-panel" style="margin: 60px auto; max-width: 1300px;">
+    <div class="about-content">
+      <h2>About <span>Life Log</span></h2>
+      <p>Life Log is built with a singular vision: to empower individuals to reclaim their time, understand their
+        habits, and elevate their daily potential. We believe that tracking your life shouldn't be a chore, but a
+        seamless, inspiring experience. By integrating intelligent AI insights with a frictionless, visually stunning
+        interface, we help you uncover the hidden patterns of your behavior.</p>
+      <p>Whether you're trying to build a new habit, break an old one, or simply understand how your daily choices
+        affect your mood, Life Log acts as your personal command center for life improvement.</p>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="contact-section">
+    <div class="contact-card glass-panel">
+      <h2>Get In <span>Touch</span></h2>
+      <p>Have questions, feedback, or just want to say hello? We'd love to hear from you.</p>
+      <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully!'); this.reset();">
+        <div class="form-row">
+          <input type="text" class="input-glass" placeholder="Your Name" required>
+          <input type="email" class="input-glass" placeholder="Your Email" required>
+        </div>
+        <textarea class="input-glass" placeholder="Your Message" required style="min-height: 120px;"></textarea>
+        <button type="submit" class="btn-primary" style="width: 100%;">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer glass-panel">
+    <p>&copy; 2026 Life Log. All rights reserved. | <a href="#top"
+        style="color: var(--neon-cyan); text-decoration: none;">Back to top</a></p>
+  </footer>
+
+  <script>
+    function toggleIndexDropdown() {
+      const dMenu = document.getElementById("indexDropdownMenu");
+      if (dMenu) {
+        dMenu.style.display = dMenu.style.display === "block" ? "none" : "block";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.reload();
+    }
+
+    // Auth logic script
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        document.getElementById('navLoginBtn').style.display = 'none';
+        document.getElementById('navSignupBtn').style.display = 'none';
+        document.getElementById('navDashboardLink').style.display = 'inline-block';
+        document.getElementById('navProfileDropdown').style.display = 'inline-block';
+
+        try {
+          const res = await fetch("http://localhost:5000/api/user/profile", {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const user = await res.json();
+            if (user.avatar) {
+              document.getElementById("indexNavAvatar").src = user.avatar;
+            } else {
+              document.getElementById("indexNavAvatar").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0f0f13&color=00f2fe`;
+            }
+            if (user.role === 'admin') {
+              const dashLink = document.getElementById('navDashboardLink');
+              dashLink.href = "admin.html";
+              dashLink.innerText = "Admin Portal";
+              dashLink.style.color = "var(--neon-purple)";
+            }
+          }
+        } catch (e) { }
+      }
+    });
+  </script>
+</body>
+
+</html>

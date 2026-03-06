@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Life Log - Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body id="top">
+
+    <nav class="navbar glass-panel">
+        <div class="logo">Life Log</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <div class="profile-dropdown" id="profileDropdown" onclick="toggleDropdown()">
+                <img src="assets/default-avatar.png" alt="Profile" class="profile-avatar" id="navAvatar"
+                    onerror="this.src='https://ui-avatars.com/api/?name=User&background=00f2fe&color=fff'">
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="profile.html">My Profile</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container glass-panel" style="background: var(--bg-dark);">
+        <h2 style="color: var(--neon-cyan); margin-bottom: 30px;">User Profile</h2>
+
+        <!-- Profile Pic Section -->
+        <div class="profile-pic-wrapper">
+            <img src="assets/default-avatar.png" alt="Profile avatar" class="profile-pic-lg" id="profilePreview"
+                onerror="this.src='https://ui-avatars.com/api/?name=User&background=00f2fe&color=fff'">
+            <label class="upload-overlay" title="Upload Image">
+                <span style="font-size: 20px;">+</span>
+                <input type="file" id="avatarInput" accept="image/*">
+            </label>
+        </div>
+
+        <div style="text-align: left; max-width: 400px; margin: 0 auto;">
+            <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px; text-align: center;">Update
+                your public information here. Images are saved to your account.</p>
+
+            <div class="form-row" style="flex-direction: column;">
+                <label style="color: var(--text-secondary); font-size: 13px; margin-bottom: -10px;">Display Name</label>
+                <input type="text" id="profileName" class="input-glass" placeholder="Your Name">
+            </div>
+
+            <div class="form-row" style="flex-direction: column; margin-top: 10px;">
+                <label style="color: var(--text-secondary); font-size: 13px; margin-bottom: -10px;">Email Address
+                    (Cannot change)</label>
+                <input type="text" id="profileEmail" class="input-glass" disabled
+                    style="opacity: 0.6; cursor: not-allowed;">
+            </div>
+
+            <div class="form-row" style="flex-direction: column; margin-top: 10px;">
+                <label style="color: var(--text-secondary); font-size: 13px; margin-bottom: -10px;">Current Password
+                    (To change password)</label>
+                <input type="password" id="currentPassword" class="input-glass" placeholder="Leave blank to keep same">
+            </div>
+
+            <div class="form-row" style="flex-direction: column; margin-top: 10px;">
+                <label style="color: var(--text-secondary); font-size: 13px; margin-bottom: -10px;">New Password</label>
+                <input type="password" id="newPassword" class="input-glass" placeholder="New password">
+            </div>
+
+            <div class="form-row" style="flex-direction: column; margin-top: 10px;">
+                <label style="color: var(--text-secondary); font-size: 13px; margin-bottom: -10px;">Confirm New
+                    Password</label>
+                <input type="password" id="confirmPassword" class="input-glass" placeholder="Confirm new password">
+            </div>
+
+            <button class="btn-primary" style="width: 100%; margin-top: 20px; padding: 15px;"
+                onclick="saveProfile()">Save Changes</button>
+            <p id="profileMessage" style="color: var(--neon-cyan); text-align: center; margin-top: 15px;"></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer glass-panel">
+        <p>&copy; 2026 Life Log. All rights reserved. | <a href="#top"
+                style="color: var(--neon-cyan); text-decoration: none;">Back to top</a></p>
+    </footer>
+
+    <script src="js/profile.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Register - Life Log</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="auth-page" id="top">
+
+  <div class="auth-card glass-panel">
+    <h2>Create Account</h2>
+    <p class="auth-subtitle">Join the Life Log nexus</p>
+
+    <input type="text" id="name" placeholder="Full Name">
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="password" id="password" placeholder="Password">
+
+    <button class="btn-primary full-btn" style="width: 100%; margin-top: 10px;" onclick="register()">Create
+      Profile</button>
+
+    <p id="registerMessage" class="auth-message" style="color: #ff5555; margin-top: 15px;"></p>
+
+    <p class="auth-footer" style="margin-top: 25px; color: var(--text-secondary); font-size: 14px;">
+      Already have an account?
+      <a href="login.html" class="auth-link" style="display: inline; margin-top: 0; color: var(--neon-cyan);">Log in</a>
+    </p>
+    <a href="index.html" class="auth-link" style="margin-top: 10px;">Return Home</a>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer glass-panel">
+    <p>&copy; 2026 Life Log. All rights reserved. | <a href="#top"
+        style="color: var(--neon-cyan); text-decoration: none;">Back to top</a></p>
+  </footer>
+
+  <script src="js/auth.js"></script>
+
+</body>
+
+</html>

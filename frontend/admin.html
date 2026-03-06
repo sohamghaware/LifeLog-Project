@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Life Log - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: var(--text-primary);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            color: var(--neon-cyan);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body id="top">
+    <nav class="navbar glass-panel">
+        <div class="logo">Life Log <span style="font-size: 14px; color: var(--neon-purple);">[ADMIN]</span></div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#" class="btn-primary" style="padding: 8px 15px; font-size: 13px;" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard" style="max-width: 1200px; margin: 40px auto;">
+
+        <!-- HEALTH PANEL -->
+        <div class="entries-panel glass-panel"
+            style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; padding: 20px 30px;">
+            <h3 class="panel-header" style="margin: 0; border: none; padding: 0;">System Health Info</h3>
+            <div style="display: flex; gap: 20px; color: var(--text-secondary); font-size: 14px;">
+                <div><strong>Backend:</strong> <span id="sysBackend" style="color: var(--neon-cyan);">Checking...</span>
+                </div>
+                <div><strong>Database:</strong> <span id="sysDb" style="color: var(--neon-cyan);">Checking...</span>
+                </div>
+                <div><strong>AI Service:</strong> <span id="sysAi" style="color: var(--neon-cyan);">Checking...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN STATS GRID -->
+        <div class="stats-grid" style="margin-bottom: 30px; grid-template-columns: repeat(3, 1fr);">
+            <div class="stat-card glass-panel">
+                <h3>Total Registered Users</h3>
+                <p class="stat-number" id="statsUsers">0</p>
+            </div>
+            <div class="stat-card glass-panel">
+                <h3>Total Logs</h3>
+                <p class="stat-number" id="statsLogs">0</p>
+            </div>
+            <div class="stat-card glass-panel">
+                <h3>Logs Today</h3>
+                <p class="stat-number" id="statsToday">0</p>
+            </div>
+            <div class="stat-card glass-panel">
+                <h3>Logs This Week</h3>
+                <p class="stat-number" id="statsWeek">0</p>
+            </div>
+            <div class="stat-card glass-panel">
+                <h3>Most Common Mood</h3>
+                <p class="stat-number" id="statsMood" style="font-size: 24px;">-</p>
+            </div>
+            <div class="stat-card glass-panel">
+                <h3>Most Common Activity</h3>
+                <p class="stat-number" id="statsActivity" style="font-size: 24px;">-</p>
+            </div>
+        </div>
+
+        <div class="entries-panel glass-panel" style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 class="panel-header" style="margin: 0;">System Users Overview</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-primary"
+                        style="padding: 6px 12px; font-size: 13px; background: rgba(0, 242, 254, 0.2);"
+                        onclick="exportUsers()">Export Users CSV</button>
+                    <button class="btn-primary"
+                        style="padding: 6px 12px; font-size: 13px; background: rgba(0, 242, 254, 0.2);"
+                        onclick="exportLogs()">Export Logs CSV</button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="searchUser" class="input-glass" placeholder="Search by name or email..."
+                    style="flex: 1;" oninput="applyUserFilters()">
+                <select id="filterRole" class="input-glass" style="width: 150px;" onchange="applyUserFilters()">
+                    <option value="all">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+                <select id="sortUser" class="input-glass" style="width: 180px;" onchange="applyUserFilters()">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="mostLogs">Most Logs</option>
+                    <option value="leastLogs">Least Logs</option>
+                </select>
+            </div>
+
+            <p id="adminMessage" style="color: var(--neon-cyan);"></p>
+
+            <table style="margin-top: 10px;">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Logs</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align:center;">Loading users...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination Controls -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <button class="btn-primary"
+                    style="padding: 6px 12px; font-size: 13px; background: transparent; border: 1px solid var(--neon-cyan);"
+                    id="prevPageBtn" onclick="prevPage()" disabled>Previous</button>
+                <span style="color: var(--text-secondary); font-size: 14px;" id="pageIndicator">Page 1</span>
+                <button class="btn-primary"
+                    style="padding: 6px 12px; font-size: 13px; background: transparent; border: 1px solid var(--neon-cyan);"
+                    id="nextPageBtn" onclick="nextPage()" disabled>Next</button>
+            </div>
+        </div>
+
+        <div class="entries-panel glass-panel">
+            <h3 class="panel-header">Administrative Activity Logs</h3>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <table style="margin-top: 0;">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Admin</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminLogsBody">
+                        <tr>
+                            <td colspan="4" style="text-align:center;">Loading activity logs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Logs Modal -->
+    <div id="userLogsModal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 800px; width: 90%;">
+            <span class="close-modal" onclick="closeUserLogsModal()">&times;</span>
+            <h2 style="margin-top: 0;" id="userLogsTitle">User Activity</h2>
+            <div style="max-height: 400px; overflow-y: auto; margin-top: 20px;">
+                <table style="width:100%; margin-top: 0;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>Category</th>
+                            <th>Mood</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userSpecificLogsBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer glass-panel">
+        <p>&copy; 2026 Life Log. All rights reserved. | <a href="#top"
+                style="color: var(--neon-cyan); text-decoration: none;">Back to top</a></p>
+    </footer>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
