@@ -10,7 +10,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: ["https://lifelog-project.vercel.app"]
+  origin: "https://life-log-project.vercel.app"
 }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
