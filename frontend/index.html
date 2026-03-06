@@ -105,13 +105,16 @@
     <div class="contact-card glass-panel">
       <h2>Get In <span>Touch</span></h2>
       <p>Have questions, feedback, or just want to say hello? We'd love to hear from you.</p>
-      <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully!'); this.reset();">
+      <form class="contact-form" onsubmit="submitContactForm(event)">
         <div class="form-row">
-          <input type="text" class="input-glass" placeholder="Your Name" required>
-          <input type="email" class="input-glass" placeholder="Your Email" required>
+          <input type="text" id="contactName" class="input-glass" placeholder="Your Name" required>
+          <input type="email" id="contactEmail" class="input-glass" placeholder="Your Email" required>
         </div>
-        <textarea class="input-glass" placeholder="Your Message" required style="min-height: 120px;"></textarea>
+        <textarea id="contactMessage" class="input-glass" placeholder="Your Message" required
+          style="min-height: 120px;"></textarea>
         <button type="submit" class="btn-primary" style="width: 100%;">Send Message</button>
+        <p id="contactStatus" style="margin-top: 10px; font-size: 14px; text-align: center; color: var(--neon-cyan);">
+        </p>
       </form>
     </div>
   </section>
@@ -166,6 +169,39 @@
         } catch (e) { }
       }
     });
+
+    // Contact form handling API
+    async function submitContactForm(event) {
+      event.preventDefault();
+      const statusEl = document.getElementById("contactStatus");
+      const name = document.getElementById("contactName").value;
+      const email = document.getElementById("contactEmail").value;
+      const content = document.getElementById("contactMessage").value;
+
+      statusEl.style.color = "var(--text-secondary)";
+      statusEl.innerText = "Sending message...";
+
+      try {
+        const res = await fetch("http://localhost:5000/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, content })
+        });
+
+        if (res.ok) {
+          statusEl.style.color = "#00ffaa";
+          statusEl.innerText = "Message sent successfully!";
+          event.target.reset();
+          setTimeout(() => { statusEl.innerText = ""; }, 4000);
+        } else {
+          statusEl.style.color = "#ff5555";
+          statusEl.innerText = "Failed to send message. Please try again.";
+        }
+      } catch (err) {
+        statusEl.style.color = "#ff5555";
+        statusEl.innerText = "Server error. Could not connect.";
+      }
+    }
   </script>
 </body>
 

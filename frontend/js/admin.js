@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadStats();
     loadAdminLogs();
     fetchUsers();
+    loadContactMessages();
 });
 
 // APIs - Loaders
@@ -94,6 +95,47 @@ async function loadAdminLogs() {
             });
         }
     } catch (e) { }
+}
+
+async function loadContactMessages() {
+    try {
+        const res = await fetch(`${API_BASE}/admin/messages`, { headers: { Authorization: `Bearer ${getToken()}` } });
+        if (res.ok) {
+            const msgs = await res.json();
+            const tbody = document.getElementById("contactMessagesBody");
+            tbody.innerHTML = "";
+            if (msgs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No new messages.</td></tr>`;
+                return;
+            }
+            msgs.forEach(msg => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="white-space:nowrap">${new Date(msg.createdAt).toLocaleString()}</td>
+                    <td><strong>${msg.name}</strong></td>
+                    <td><a href="mailto:${msg.email}" style="color:var(--neon-cyan)">${msg.email}</a></td>
+                    <td>${msg.content}</td>
+                    <td><button class="btn-danger" style="padding: 4px 10px; font-size: 12px;" onclick="deleteMessage('${msg._id}')">Delete</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } catch (e) { }
+}
+
+async function deleteMessage(msgId) {
+    if (!confirm("Delete this message?")) return;
+    try {
+        const res = await fetch(`${API_BASE}/admin/messages/${msgId}`, {
+            method: "DELETE", headers: { Authorization: `Bearer ${getToken()}` }
+        });
+        if (res.ok) {
+            showMessage("Message deleted", "#00ffaa");
+            loadContactMessages();
+        } else {
+            showMessage("Failed to delete message", "#ff5555");
+        }
+    } catch (e) { showMessage("Error", "#ff5555"); }
 }
 
 // User Actions

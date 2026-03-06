@@ -5,6 +5,7 @@ const { verifyAdmin } = require("../middleware/adminMiddleware");
 const User = require("../models/User");
 const Entry = require("../models/Entry");
 const AdminLog = require("../models/AdminLog");
+const Message = require("../models/Message");
 const mongoose = require("mongoose");
 
 const router = express.Router();
@@ -198,6 +199,30 @@ router.get("/export/logs", protect, verifyAdmin, async (req, res) => {
         res.attachment("logs_export.csv");
         return res.send(csv);
     } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// GET /api/admin/messages
+router.get("/messages", protect, verifyAdmin, async (req, res) => {
+    try {
+        const messages = await Message.find({}).sort({ createdAt: -1 });
+        res.json(messages);
+    } catch (err) {
+        console.error("Admin gets messages error:", err.message);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// DELETE /api/admin/messages/:id
+router.delete("/messages/:id", protect, verifyAdmin, async (req, res) => {
+    try {
+        const message = await Message.findByIdAndDelete(req.params.id);
+        if (!message) return res.status(404).json({ message: "Message not found" });
+
+        res.json({ message: "Message deleted successfully" });
+    } catch (err) {
+        console.error("Admin deletes message error:", err.message);
         res.status(500).json({ message: "Server error" });
     }
 });
