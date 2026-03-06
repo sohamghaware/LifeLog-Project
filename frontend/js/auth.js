@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://lifelog-project.onrender.com/api";
 
 async function login() {
   const email = document.getElementById("email").value;

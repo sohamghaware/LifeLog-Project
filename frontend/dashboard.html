@@ -255,7 +255,7 @@
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          const res = await fetch("http://localhost:5000/api/user/profile", {
+          const res = await fetch("https://lifelog-project.onrender.com/api/user/profile", {
             headers: { "Authorization": `Bearer ${token}` }
           });
           if (res.ok) {

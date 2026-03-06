@@ -1,5 +1,5 @@
 // frontend/js/profile.js
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://lifelog-project.onrender.com/api";
 let currentAvatar = "";
 
 document.addEventListener("DOMContentLoaded", () => {

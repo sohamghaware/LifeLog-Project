@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://lifelog-project.onrender.com/api";
 let activityChartInstance = null;
 let categoryChartInstance = null;
 

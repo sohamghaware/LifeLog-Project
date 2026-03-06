@@ -149,7 +149,7 @@
         document.getElementById('navProfileDropdown').style.display = 'inline-block';
 
         try {
-          const res = await fetch("http://localhost:5000/api/user/profile", {
+          const res = await fetch("https://lifelog-project.onrender.com/api/user/profile", {
             headers: { "Authorization": `Bearer ${token}` }
           });
           if (res.ok) {
@@ -182,7 +182,7 @@
       statusEl.innerText = "Sending message...";
 
       try {
-        const res = await fetch("http://localhost:5000/api/contact", {
+        const res = await fetch("https://lifelog-project.onrender.com/api/contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, email, content })
