@@ -192,10 +192,11 @@
     </div>
 
     <!-- User Logs Modal -->
-    <div id="userLogsModal" class="modal">
-        <div class="modal-content glass-panel" style="max-width: 800px; width: 90%;">
-            <span class="close-modal" onclick="closeUserLogsModal()">&times;</span>
-            <h2 style="margin-top: 0;" id="userLogsTitle">User Activity</h2>
+    <div id="userLogsModal" class="modal-overlay">
+        <div class="modal-content glass-panel" style="max-width: 800px; width: 90%; position: relative;">
+            <span class="close-modal" onclick="closeUserLogsModal()"
+                style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: var(--text-secondary); cursor: pointer;">&times;</span>
+            <h2 style="margin-top: 0; color: var(--neon-cyan);" id="userLogsTitle">User Activity</h2>
             <div style="max-height: 400px; overflow-y: auto; margin-top: 20px;">
                 <table style="width:100%; margin-top: 0;">
                     <thead>

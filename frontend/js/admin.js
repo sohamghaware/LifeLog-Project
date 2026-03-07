@@ -176,7 +176,7 @@ async function viewUserLogs(userId, userName) {
     document.getElementById("userLogsTitle").innerText = `Activity Logs for ${userName}`;
     const tbody = document.getElementById("userSpecificLogsBody");
     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>`;
-    document.getElementById("userLogsModal").style.display = "block";
+    document.getElementById("userLogsModal").classList.add("active");
 
     try {
         const res = await fetch(`${API_BASE}/admin/users/${userId}/entries`, { headers: { Authorization: `Bearer ${getToken()}` } });
@@ -184,7 +184,7 @@ async function viewUserLogs(userId, userName) {
             const logs = await res.json();
             tbody.innerHTML = "";
             if (logs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No activity logs found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">This user has not logged any activities yet.</td></tr>`;
                 return;
             }
             logs.forEach(l => {
@@ -203,7 +203,7 @@ async function viewUserLogs(userId, userName) {
 }
 
 function closeUserLogsModal() {
-    document.getElementById("userLogsModal").style.display = "none";
+    document.getElementById("userLogsModal").classList.remove("active");
 }
 
 // Search, Filter, Sort & Paging
