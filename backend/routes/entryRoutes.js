@@ -12,7 +12,9 @@ async function checkVisionProgress(userId, category) {
   if (!visions.length) return;
 
   for (let v of visions) {
-    const entries = await Entry.find({ user: userId, category: v.activityCategory, date: { $gte: v.createdAt } });
+    const goalStart = new Date(v.createdAt);
+    goalStart.setUTCHours(0, 0, 0, 0);
+    const entries = await Entry.find({ user: userId, category: v.activityCategory, date: { $gte: goalStart } });
     const totalMins = entries.reduce((sum, e) => sum + e.durationMinutes, 0);
     v.currentHours = totalMins / 60;
     if (v.currentHours >= v.targetHours && v.targetHours > 0) {
