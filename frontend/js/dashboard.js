@@ -83,6 +83,7 @@ async function addEntry() {
     }, 5000);
 
     loadEntries();
+    loadVisionBoard(); // Automatically reload vision board progress mapping to the new entry
     fetchAiInsights(mood, true); // fetch AI insights and show pop-up
   } else {
     document.getElementById("entryMessage").innerText = "Failed to add record.";
@@ -186,6 +187,7 @@ async function deleteEntry(id) {
     headers: { Authorization: `Bearer ${token}` }
   });
   loadEntries();
+  loadVisionBoard();
   fetchAiInsights();
 }
 
@@ -236,6 +238,7 @@ async function submitEdit() {
 
   closeEditModal();
   loadEntries();
+  loadVisionBoard();
   fetchAiInsights();
 }
 

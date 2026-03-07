@@ -104,8 +104,8 @@ router.post("/", protect, async (req, res) => {
 
     const responseData = entry.toObject();
 
-    // Trigger vision progress check asynchronously
-    checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update error:", err));
+    // Trigger vision progress check synchronously to guarantee database consistency
+    await checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update error:", err));
 
     res.status(201).json(responseData);
   } catch (err) {
@@ -184,7 +184,7 @@ router.delete("/:id", protect, async (req, res) => {
     const category = entry.category;
     await entry.deleteOne();
 
-    checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update err", err));
+    await checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update err", err));
 
     res.json({ message: "Entry deleted" });
   } catch (err) {
@@ -222,9 +222,9 @@ router.put("/:id", protect, async (req, res) => {
 
     const updatedEntry = await entry.save();
 
-    checkVisionProgress(req.user._id, updatedEntry.category).catch(err => console.error("Vision update err", err));
+    await checkVisionProgress(req.user._id, updatedEntry.category).catch(err => console.error("Vision update err", err));
     if (category && category !== entry.category) {
-      checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update err", err));
+      await checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update err", err));
     }
 
     res.json(updatedEntry);
