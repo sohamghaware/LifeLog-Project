@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadEntries();
   loadVisionBoard();
   fetchAiInsights();
+  fetchInsightsAndStreaks();
 });
 
 function getToken() {
@@ -85,6 +86,7 @@ async function addEntry() {
     loadEntries();
     loadVisionBoard(); // Automatically reload vision board progress mapping to the new entry
     fetchAiInsights(mood, true); // fetch AI insights and show pop-up
+    fetchInsightsAndStreaks();
   } else {
     document.getElementById("entryMessage").innerText = "Failed to add record.";
   }
@@ -189,6 +191,7 @@ async function deleteEntry(id) {
   loadEntries();
   loadVisionBoard();
   fetchAiInsights();
+  fetchInsightsAndStreaks();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -240,6 +243,7 @@ async function submitEdit() {
   loadEntries();
   loadVisionBoard();
   fetchAiInsights();
+  fetchInsightsAndStreaks();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -260,6 +264,48 @@ async function fetchStreak() {
     }
   } catch (err) {
     console.error("Fetch streak error:", err);
+  }
+}
+
+async function fetchInsightsAndStreaks() {
+  const token = getToken();
+  try {
+    const res = await fetch(`${API_BASE}/user/insights`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+
+      // Update Weekly Insights List
+      const wInsights = document.getElementById("weeklyInsightsList");
+      if (wInsights && data.weekly) {
+        wInsights.innerHTML = `
+          <li><span style="color: var(--neon-cyan);">⏱️ Total Time:</span> ${Math.floor(data.weekly.totalMinutes / 60)}h ${data.weekly.totalMinutes % 60}m</li>
+          <li><span style="color: var(--neon-cyan);">📌 Top Category:</span> ${data.weekly.mostFrequentCategory}</li>
+          <li><span style="color: var(--neon-cyan);">🎭 Average Mood:</span> ${data.weekly.averageMood}</li>
+          <li><span style="color: var(--neon-cyan);">🚀 Productive Day:</span> ${data.weekly.mostProductiveDay}</li>
+          <li style="margin-top: 10px; color: var(--text-secondary); font-style: italic;">"${data.weekly.suggestion}"</li>
+        `;
+      }
+
+      // Update Streaks
+      const cStreaks = document.getElementById("categoryStreaksList");
+      if (cStreaks && data.streaks) {
+        cStreaks.innerHTML = "";
+        let hasStreaks = false;
+        for (const [category, count] of Object.entries(data.streaks)) {
+          if (count > 0) {
+            hasStreaks = true;
+            cStreaks.innerHTML += `<div><span style="color: var(--neon-purple);">${category} Streak:</span> ${count} Days 🔥</div>`;
+          }
+        }
+        if (!hasStreaks) {
+          cStreaks.innerHTML = `<span style="color: var(--text-secondary); font-size: 15px; font-weight: 400;">No active category streaks yet. Log consecutive days to start building!</span>`;
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Fetch insights error:", err);
   }
 }
 
