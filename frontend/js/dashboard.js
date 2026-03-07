@@ -311,19 +311,68 @@ async function loadVisionBoard() {
   });
   const visions = await res.json();
   const grid = document.getElementById("visionGrid");
-  grid.innerHTML = "";
+  const achievementGrid = document.getElementById("achievementGrid");
+
+  if (grid) grid.innerHTML = "";
+  if (achievementGrid) achievementGrid.innerHTML = "";
 
   visions.forEach(v => {
-    grid.innerHTML += `
-      <div class="vision-card">
-        <img src="${v.imageUrl}" alt="${v.title}" onerror="this.src='https://via.placeholder.com/200?text=Invalid+Image'">
-        <div class="vision-card-overlay">
-          <h4>${v.title}</h4>
-          <button class="btn-danger" style="width: 100%; border-radius: 6px; font-size: 12px; padding: 4px;" onclick="deleteVision('${v._id}')">Remove</button>
-        </div>
-      </div>
-    `;
+    if (v.completed) {
+      if (achievementGrid) {
+        const completedDate = v.completedAt ? new Date(v.completedAt).toLocaleDateString() : 'N/A';
+        achievementGrid.innerHTML += `
+          <div class="vision-card" style="border: 2px solid #38ef7d; box-shadow: 0 0 10px rgba(56, 239, 125, 0.4);">
+            <img src="${v.imageUrl}" alt="${v.title}" onerror="this.src='https://via.placeholder.com/200?text=Invalid+Image'" style="opacity: 0.7;">
+            <div class="vision-card-overlay" style="background: rgba(0,0,0,0.85);">
+              <h4 style="color: #38ef7d; margin-bottom: 5px;">✅ Goal Completed</h4>
+              <p style="font-size: 15px; font-weight: bold; margin-bottom: 5px;">${v.title}</p>
+              <p style="font-size: 12px; color: #ccc;">Completed: ${completedDate}</p>
+              <p style="font-size: 11px; color: #fff; margin-top: 8px; font-style: italic;">"Great job! Keep achieving your goals."</p>
+              <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; margin-top: 10px; overflow: hidden;">
+                <div style="width: 100%; height: 100%; background: #38ef7d;"></div>
+              </div>
+              <button class="btn-danger" style="width: 100%; border-radius: 6px; font-size: 12px; padding: 4px; margin-top: 10px;" onclick="deleteVision('${v._id}')">Remove</button>
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      if (grid) {
+        grid.innerHTML += `
+          <div class="vision-card">
+            <img src="${v.imageUrl}" alt="${v.title}" onerror="this.src='https://via.placeholder.com/200?text=Invalid+Image'">
+            <div class="vision-card-overlay">
+              <h4 style="margin-bottom: 10px;">${v.title}</h4>
+              <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 10px 0; overflow: hidden;">
+                <div style="width: 0%; height: 100%; background: #38ef7d;"></div>
+              </div>
+              <div style="display: flex; gap: 5px; width: 100%;">
+                <button class="btn-primary" style="flex: 1; border-radius: 6px; font-size: 12px; padding: 4px; background: #38ef7d; color: #000; border: none; font-weight: bold;" onclick="completeVision('${v._id}')">Complete Goal</button>
+                <button class="btn-danger" style="flex: 1; border-radius: 6px; font-size: 12px; padding: 4px;" onclick="deleteVision('${v._id}')">Remove</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
   });
+}
+
+async function completeVision(id) {
+  const token = getToken();
+  try {
+    const res = await fetch(`${API_BASE}/vision/${id}/complete`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (res.ok) {
+      loadVisionBoard();
+    } else {
+      alert("Failed to complete goal.");
+    }
+  } catch (err) {
+    console.error("Complete vision error:", err);
+  }
 }
 
 async function addVision() {

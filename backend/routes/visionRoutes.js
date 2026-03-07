@@ -58,4 +58,27 @@ router.delete("/:id", protect, async (req, res) => {
     }
 });
 
+// PUT /api/vision/:id/complete
+router.put("/:id/complete", protect, async (req, res) => {
+    try {
+        const vision = await Vision.findOne({
+            _id: req.params.id,
+            user: req.user._id,
+        });
+
+        if (!vision) {
+            return res.status(404).json({ message: "Vision item not found" });
+        }
+
+        vision.completed = true;
+        vision.completedAt = new Date();
+        await vision.save();
+
+        res.json(vision);
+    } catch (err) {
+        console.error("Complete vision error:", err.message);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 module.exports = router;
