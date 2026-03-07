@@ -169,10 +169,28 @@
     <!-- VISION BOARD -->
     <div class="vision-board glass-panel">
       <h3 class="panel-header">Vision Board</h3>
-      <div class="vision-input-bar">
-        <input type="text" id="visionTitle" class="input-glass" placeholder="Goal Title">
-        <input type="text" id="visionUrl" class="input-glass" placeholder="Image URL">
-        <button class="btn-primary" onclick="addVision()">Add Vision</button>
+      <div class="vision-input-bar" style="flex-wrap: wrap; gap: 10px;">
+        <input type="text" id="visionTitle" class="input-glass" placeholder="Goal Title"
+          style="flex: 1; min-width: 200px;">
+        <input type="text" id="visionUrl" class="input-glass" placeholder="Image URL (Optional)"
+          style="flex: 1; min-width: 200px;">
+        <select id="visionType" class="input-glass" onchange="toggleActivityFields()"
+          style="flex: 1; min-width: 200px;">
+          <option value="manual">Personal Vision (Manual)</option>
+          <option value="activity">Activity Goal (Auto-tracked)</option>
+        </select>
+        <select id="visionCategory" class="input-glass" style="display: none; flex: 1; min-width: 150px;">
+          <option value="Study">Study</option>
+          <option value="Work">Work</option>
+          <option value="Exercise">Exercise</option>
+          <option value="Social">Social</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Personal">Personal</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="number" id="visionTargetHours" class="input-glass" placeholder="Target Hr"
+          style="display: none; flex: 1; min-width: 100px;" min="1">
+        <button class="btn-primary" onclick="addVision()" style="min-width: 120px;">Add Goal</button>
       </div>
       <div class="vision-grid" id="visionGrid">
         <!-- Vision Cards -->

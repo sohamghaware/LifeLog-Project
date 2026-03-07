@@ -19,16 +19,25 @@ router.get("/", protect, async (req, res) => {
 // POST /api/vision
 router.post("/", protect, async (req, res) => {
     try {
-        const { title, imageUrl } = req.body;
+        const { title, imageUrl, type, activityCategory, targetHours } = req.body;
 
         if (!title) {
             return res.status(400).json({ message: "Title is required" });
+        }
+
+        if (type === 'activity') {
+            if (!activityCategory || !targetHours) {
+                return res.status(400).json({ message: "Category and target hours required for activity goals" });
+            }
         }
 
         const vision = await Vision.create({
             user: req.user._id,
             title,
             imageUrl: imageUrl || "",
+            type: type || 'manual',
+            activityCategory: type === 'activity' ? activityCategory : undefined,
+            targetHours: type === 'activity' ? Number(targetHours) : 0,
         });
 
         res.status(201).json(vision);

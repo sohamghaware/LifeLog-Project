@@ -304,6 +304,19 @@ function closeAiModal() {
 /*                                VISION BOARD                                */
 /* -------------------------------------------------------------------------- */
 
+function toggleActivityFields() {
+  const type = document.getElementById("visionType").value;
+  const cat = document.getElementById("visionCategory");
+  const hours = document.getElementById("visionTargetHours");
+  if (type === 'activity') {
+    cat.style.display = 'block';
+    hours.style.display = 'block';
+  } else {
+    cat.style.display = 'none';
+    hours.style.display = 'none';
+  }
+}
+
 async function loadVisionBoard() {
   const token = getToken();
   const res = await fetch(`${API_BASE}/vision`, {
@@ -338,18 +351,41 @@ async function loadVisionBoard() {
       }
     } else {
       if (grid) {
+        // compute progress width
+        let progressPercent = 0;
+        let progressText = "";
+        let buttonsHtml = "";
+
+        if (v.type === 'activity') {
+          progressPercent = v.targetHours > 0 ? Math.min(100, (v.currentHours / v.targetHours) * 100) : 0;
+          progressText = `<p style="font-size: 11px; margin-bottom: 5px;">Progress: ${Number(v.currentHours).toFixed(1)} / ${v.targetHours} Hrs</p>`;
+          // Auto-tracked, so no manual completion button
+          buttonsHtml = `
+            <div style="display: flex; gap: 5px; width: 100%;">
+              <span style="flex: 1; font-size: 11px; color: #00f2fe; text-align: center; display: inline-block; padding-top: 5px;">Auto-tracked</span>
+              <button class="btn-danger" style="flex: 1; border-radius: 6px; font-size: 12px; padding: 4px;" onclick="deleteVision('${v._id}')">Remove</button>
+            </div>
+          `;
+        } else {
+          progressText = `<p style="font-size: 11px; margin-bottom: 5px;">Type: Manual</p>`;
+          buttonsHtml = `
+            <div style="display: flex; gap: 5px; width: 100%;">
+              <button class="btn-primary" style="flex: 1; border-radius: 6px; font-size: 12px; padding: 4px; background: #38ef7d; color: #000; border: none; font-weight: bold;" onclick="completeVision('${v._id}')">Complete Goal</button>
+              <button class="btn-danger" style="flex: 1; border-radius: 6px; font-size: 12px; padding: 4px;" onclick="deleteVision('${v._id}')">Remove</button>
+            </div>
+          `;
+        }
+
         grid.innerHTML += `
           <div class="vision-card">
             <img src="${v.imageUrl || 'https://via.placeholder.com/200?text=Vision'}" alt="${v.title}" onerror="this.src='https://via.placeholder.com/200?text=Invalid+Image'">
             <div class="vision-card-overlay">
               <h4 style="margin-bottom: 10px;">${v.title}</h4>
-              <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 10px 0; overflow: hidden;">
-                <div style="width: 0%; height: 100%; background: #38ef7d;"></div>
+              ${progressText}
+              <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 5px 0 10px 0; overflow: hidden;">
+                <div style="width: ${progressPercent}%; height: 100%; background: #38ef7d; transition: width 0.5s;"></div>
               </div>
-              <div style="display: flex; gap: 5px; width: 100%;">
-                <button class="btn-primary" style="flex: 1; border-radius: 6px; font-size: 12px; padding: 4px; background: #38ef7d; color: #000; border: none; font-weight: bold;" onclick="completeVision('${v._id}')">Complete Goal</button>
-                <button class="btn-danger" style="flex: 1; border-radius: 6px; font-size: 12px; padding: 4px;" onclick="deleteVision('${v._id}')">Remove</button>
-              </div>
+              ${buttonsHtml}
             </div>
           </div>
         `;
@@ -379,8 +415,14 @@ async function addVision() {
   const token = getToken();
   const title = document.getElementById("visionTitle").value.trim();
   const imageUrl = document.getElementById("visionUrl").value.trim();
+  const type = document.getElementById("visionType").value;
+  const activityCategory = document.getElementById("visionCategory").value;
+  const targetHours = document.getElementById("visionTargetHours").value;
 
   if (!title) return alert("Title is required");
+  if (type === 'activity' && (!activityCategory || !targetHours)) {
+    return alert("Category and Target Hours are required for Activity Goals");
+  }
 
   await fetch(`${API_BASE}/vision`, {
     method: "POST",
@@ -388,11 +430,12 @@ async function addVision() {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify({ title, imageUrl })
+    body: JSON.stringify({ title, imageUrl, type, activityCategory, targetHours })
   });
 
   document.getElementById("visionTitle").value = "";
   document.getElementById("visionUrl").value = "";
+  document.getElementById("visionTargetHours").value = "";
   loadVisionBoard();
 }
 

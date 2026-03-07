@@ -1,9 +1,27 @@
 // backend/routes/entryRoutes.js
 const express = require("express");
 const Entry = require("../models/Entry");
+const Vision = require("../models/Vision");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
+
+async function checkVisionProgress(userId, category) {
+  if (!category) return;
+  const visions = await Vision.find({ user: userId, type: 'activity', activityCategory: category, completed: false });
+  if (!visions.length) return;
+
+  for (let v of visions) {
+    const entries = await Entry.find({ user: userId, category: v.activityCategory, date: { $gte: v.createdAt } });
+    const totalMins = entries.reduce((sum, e) => sum + e.durationMinutes, 0);
+    v.currentHours = totalMins / 60;
+    if (v.currentHours >= v.targetHours && v.targetHours > 0) {
+      v.completed = true;
+      v.completedAt = new Date();
+    }
+    await v.save();
+  }
+}
 
 // POST /api/entries  – create entry
 router.post("/", protect, async (req, res) => {
@@ -84,6 +102,9 @@ router.post("/", protect, async (req, res) => {
 
     const responseData = entry.toObject();
 
+    // Trigger vision progress check asynchronously
+    checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update error:", err));
+
     res.status(201).json(responseData);
   } catch (err) {
     console.error("Create entry error:", err.message);
@@ -158,7 +179,11 @@ router.delete("/:id", protect, async (req, res) => {
     if (!entry) {
       return res.status(404).json({ message: "Entry not found" });
     }
+    const category = entry.category;
     await entry.deleteOne();
+
+    checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update err", err));
+
     res.json({ message: "Entry deleted" });
   } catch (err) {
     console.error("Delete entry error:", err.message);
@@ -194,6 +219,12 @@ router.put("/:id", protect, async (req, res) => {
     if (mood) entry.mood = mood;
 
     const updatedEntry = await entry.save();
+
+    checkVisionProgress(req.user._id, updatedEntry.category).catch(err => console.error("Vision update err", err));
+    if (category && category !== entry.category) {
+      checkVisionProgress(req.user._id, category).catch(err => console.error("Vision update err", err));
+    }
+
     res.json(updatedEntry);
 
   } catch (err) {
