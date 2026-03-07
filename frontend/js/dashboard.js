@@ -322,7 +322,7 @@ async function loadVisionBoard() {
         const completedDate = v.completedAt ? new Date(v.completedAt).toLocaleDateString() : 'N/A';
         achievementGrid.innerHTML += `
           <div class="vision-card" style="border: 2px solid #38ef7d; box-shadow: 0 0 10px rgba(56, 239, 125, 0.4);">
-            <img src="${v.imageUrl}" alt="${v.title}" onerror="this.src='https://via.placeholder.com/200?text=Invalid+Image'" style="opacity: 0.7;">
+            <img src="${v.imageUrl || 'https://via.placeholder.com/200?text=Goal+Achieved'}" alt="${v.title}" onerror="this.src='https://via.placeholder.com/200?text=Invalid+Image'" style="opacity: 0.7;">
             <div class="vision-card-overlay" style="background: rgba(0,0,0,0.85);">
               <h4 style="color: #38ef7d; margin-bottom: 5px;">✅ Goal Completed</h4>
               <p style="font-size: 15px; font-weight: bold; margin-bottom: 5px;">${v.title}</p>
@@ -340,7 +340,7 @@ async function loadVisionBoard() {
       if (grid) {
         grid.innerHTML += `
           <div class="vision-card">
-            <img src="${v.imageUrl}" alt="${v.title}" onerror="this.src='https://via.placeholder.com/200?text=Invalid+Image'">
+            <img src="${v.imageUrl || 'https://via.placeholder.com/200?text=Vision'}" alt="${v.title}" onerror="this.src='https://via.placeholder.com/200?text=Invalid+Image'">
             <div class="vision-card-overlay">
               <h4 style="margin-bottom: 10px;">${v.title}</h4>
               <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 10px 0; overflow: hidden;">
@@ -380,7 +380,7 @@ async function addVision() {
   const title = document.getElementById("visionTitle").value.trim();
   const imageUrl = document.getElementById("visionUrl").value.trim();
 
-  if (!title || !imageUrl) return alert("Title and Image URL required");
+  if (!title) return alert("Title is required");
 
   await fetch(`${API_BASE}/vision`, {
     method: "POST",

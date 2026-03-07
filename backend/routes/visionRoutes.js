@@ -21,14 +21,14 @@ router.post("/", protect, async (req, res) => {
     try {
         const { title, imageUrl } = req.body;
 
-        if (!title || !imageUrl) {
-            return res.status(400).json({ message: "Title and Image URL are required" });
+        if (!title) {
+            return res.status(400).json({ message: "Title is required" });
         }
 
         const vision = await Vision.create({
             user: req.user._id,
             title,
-            imageUrl,
+            imageUrl: imageUrl || "",
         });
 
         res.status(201).json(vision);
